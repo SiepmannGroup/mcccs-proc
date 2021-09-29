@@ -1,6 +1,12 @@
 # Job execution and farming scripts for MCCCS-MN
 # Job farming workflow
 ### 1. Calculate system sizes
+Before running GEMC adsorption simulations for a large number of nanoporous materials, the total number of adsorbate molecules for the simulations in each materials needs to be judiciously chosen. This is because a too small system size will deplete the vapor box, and a too large system size will result in large amounts of computation wasted in simulating the vapor box.
+
+A rule of thumb is to **make the vapor box length at least 30 angstroms at the lowest temperture and highest pressure**. This can be done by
+* Estimate the saturation loading either using a simulation with an ideal gas box at very high pressure and low temperature, or calculating from the pore volume (void fraction * unit cell volume * number of cells) of each zeolite and multiply it by the *liquid* density of the adsorbate.
+* Add the number of ideal gas molecules at the lowest temperature and highest pressure in a 30-angstrom box to the saturation loading. This will become the total number of molecules for each material.
+
 ### 2. Preparing simulations
 To generate the input files for all simulations in a farmed job, you will need to create the following "seed" files:
 
