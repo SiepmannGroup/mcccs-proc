@@ -1,6 +1,7 @@
 # Job execution and farming scripts for MCCCS-MN
 # Job farming workflow
-### Preparing simulations
+### 1. Calculate system sizes
+### 2. Preparing simulations
 To generate the input files for all simulations in a farmed job, you will need to create the following "seed" files:
 
 * A JSON configuration file `jobdata.json` specifying the zeolites, state points, and length for each job. An example `jobdata.json` file looks like below (note that JSON does not support comment, and the description after `#` is intended only for explanation in this document):
@@ -30,9 +31,46 @@ To generate the input files for all simulations in a farmed job, you will need t
     ...
 }
 ```
-` A seed directory `seed/` which contains the template input files of a simulation. 
-### Submitting batch jobs
+* A seed directory `seed/` which contains the template input files of a simulation. The `seed/` directory needs to contain two files at bare minimum: `topmon.inp` and `fort.4`. 
+  * The `seed/topmon.inp` file is usually a symbolic link to a master `topmon.inp` file in the root directory of the job. Then all `topmon.inp` files in the farmed simulations will be linked to the same master file.
+  * The `seed/fort.4` file will be copied and manipulated for each stage of the simulations.
+* A text file containing the list of zeolites `zeolite.txt` is also usually created in the root directory.
 
-### Processing simulations between jobs
+Before generating input files for all simulations, the working directory will look like below:
+```
+.
+├── jobdata.json
+├── ninit.json
+├── seed
+│   ├── fort.4
+│   └── topmon.inp
+└── zeolites.txt
+```
+### 3. Generating simulation files
+With a working directory with required files listed above, run
+```bash
+python /path/to/mcccs_proc/quickfarm/initialize.py
+```
+to create inout files for all simulations.
+After running the `initaialize.py` script, the working directory will look like:
+```
+.
+├── jobdata.json
+├── ninit.json
+├── job.sh
+├── jobs
+│   └── run1.txt
+├── seed
+│   ├── fort.4
+│   └── topmon.inp
+├── simulations
+│   └── ...
+├── test
+│   └── ...
+└── zeolites.txt
+```
+### 4. Submitting batch jobs
 
-### Collecting simulation data
+### 5. Processing simulations between jobs
+
+### 6. Collecting data
