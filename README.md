@@ -51,25 +51,37 @@ With a working directory with required files listed above, run
 ```bash
 python /path/to/mcccs_proc/quickfarm/initialize.py
 ```
-to create inout files for all simulations.
+to create input files for all simulations.
 After running the `initaialize.py` script, the working directory will look like:
 ```
 .
 ├── jobdata.json
 ├── ninit.json
-├── job.sh
-├── jobs
+├── job.sh # job submission script
+├── jobs # job list file to be used by MCCCS-MN
 │   └── run1.txt
 ├── seed
 │   ├── fort.4
 │   └── topmon.inp
-├── simulations
+├── simulations # directories containing simulation inputs
 │   └── ...
-├── test
+├── test # test directory for dry run
 │   └── ...
 └── zeolites.txt
 ```
 ### 4. Submitting batch jobs
+Before running the large farmed job by `job.sh`, it is recommended to first perform a sanity check using the sample files produced in the `test/` directory to make sure there is no error in the simulation input files. To do this, simply run the MCCCS-MN job farming executable under the `test/` directory with 2 processes:
+```bash
+cd test
+mpirun -n 2 /path/to/MCCCS-MN/topmon 1 1 1
+cd ..
+```
+A successful test is marked by MCCCS-MN exiting without any errors (exit code 0).
+
+Then the farmed job can be submitted to the job scheduler of the HPC cluster:
+```bash
+sbatch job.sh
+```
 
 ### 5. Processing simulations between jobs
 
