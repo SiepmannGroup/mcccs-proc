@@ -13,14 +13,24 @@ To generate the input files for all simulations in a farmed job, you will need t
     "pressures": [0.100, 0.271, 0.739, 2.009, 3.00, 5.460, 14.840, 40.340], # list of all pressures
     "temperatures": [77.00, 92.40, 110.88, 133.06, 159.67, 191.60, 229.92, 275.90], # list of all temperatures
     "n_indep": 4, # number of independent simulation
-    "t_init": 3, # total length of initialization/melting in hours
+    "t_init": 3, # total length of initialization (volume relaxation) in hours
     "t_equil": 24, # total length of equilibration in hours
     "t_prod": 24, # total length of production in hours
     "max_walltime": 6, # maximum length of each job
     "arch": "HPE" # HPC architecture to generate job script
 }
 ```
-
+* A JSON file `ninit.json` containing the number of molecules to be initialized for each zeolite. A example `ninit.jsob` file looks like below:
+```yaml
+{
+    "8056830": 1964,
+    "8067418": 1357,
+    "8078629": 1366,
+    "8080784": 1154,
+    ...
+}
+```
+` A seed directory `seed/` which contains the template input files of a simulation. 
 ### Submitting batch jobs
 
 ### Processing simulations between jobs
