@@ -66,6 +66,16 @@ def generate_script(jobs, jobdata):
         lines.append('#COBALT -n %d\n' % n_nodes)
         lines.append('#COBALT -A NanoReactive_3\n\n')
         lines.append('aprun -n %d -N %d %s' % (njobs, NCORES, jobdata["exe"]))
+    # Cray XC40 on ALCF Theta, qsub + aprun
+    # 64 cores/node
+    elif jobdata["arch"] == "MSI":
+        NCORES = 128
+        lines.append('#!/bin/bash\n')
+        lines.append('#SBATCH --time=%d:00:00\n' % jobdata["max_walltime"])
+        lines.append('#SBATCH --ntasks %d\n' % njobs)
+        lines.append('#SBATCH --cpus-per-task=1\n')
+        lines.append('#SBATCH --ntasks-per-node=%d\n' % NCORES)
+        lines.append('srun %s' % jobdata["exe"])
     else:
         raise NotImplementedError("Unknown architecture!")
     with open("job.sh", 'w') as f:
@@ -96,10 +106,10 @@ if "liquid" in jobdata:
 os.makedirs("simulations")
 
 
-pswatch = jobdata["swatch"]
-pcb = jobdata["cbmc"]
-rot = jobdata["rotation_dof"]
-NSTEP = jobdata["max_step"]
+pswatch = jobdata.get("swatch", 0)
+pcb = jobdata.get("cbmc", 0)
+rot = jobdata.get("rotation_dof", 2)
+NSTEP = jobdata.get("max_step", 200000)
 # may also input pressure grid as relative to saturated vapor pressure 
 # at each temperature
 if "p_sat" in jobdata:
