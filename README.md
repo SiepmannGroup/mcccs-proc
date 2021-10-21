@@ -90,5 +90,22 @@ sbatch job.sh
 ```
 
 ### 5. Processing simulations between jobs
+After a job is completed, use `quickfarm/next.py` to batch process all input files in a farmed job to the next round of simulations. Usage of the `next.py` script is:
+```
+python next.py [current_stage] [next_stage (optional)]
+```
+Choices of `current_stage` and `next_stage` arguments inlcude `init`, `equil`, and `prod`. When executing the script with only the first argument, the simulations of the farmed jobs will be kept in the same stage (initialization, equilibration or production), and the files generated from the last round will be stored in a directory named `init-$x`, `equil-$x`, or `prod-$x`, where `$x` will automatically increment if the simulations are kept in the same stage. When executing the script with two arguments, the simulations will be switched into the next stage, for example, from equilibration to production. The job count `$x` will be also restored to 1 for the next stage.
+
+Before submitting a job after running `next.py`, **make sure that the file `jobs/done.txt` does not exist.** Otherwise the content in `jobs/done.txt` will be excluded in the next run.
 
 ### 6. Collecting data
+After all simulations stages have completed, run `next.py prod` again to store the last round of simulation outputs into the `prod-$x` folder. 
+
+Simulation outputs can be collected using a custom script, the `getData.py` file in Rob DeJaco's [MCFlow](https://github.com/dejac001/MCFlow), or the `readfort12`/`readfort12_mpi` scripts provided by this repository.
+
+To use `readfort12` or `readfort12_mpi`, an additional file `run.txt` need to be created to specify the directories to collect data, then the executable is run in the root directory of the farmed job:
+```bash
+cp jobs/run1.txt runs.txt
+mpirun -n 4 ./readfort12_mpi prod-1 prod-2 prod-3 [...]
+```
+The program will create a CSV file `fort12.csv` which contains ensemble averages for each simulation from the `fort.12` output file.
